@@ -234,6 +234,7 @@
                             </a>
                         </div>
                     </div>
+                    <p style="text-align: center;margin: 0;"> 仅支持上传后缀为 jpeg, jpg, png 格式的图片 </p>
                 </div>
                 <div class="panel panel-2" style="display: none;" >
                     <a href="javascript:;" class="file">上传压缩包
@@ -242,6 +243,7 @@
                     <a href="javascript:;" class="file download" style="display: none;" >下载结果</a>
 
                     <p class="state"></p>
+                    <p style="text-align: center; margin: 0;"> 仅支持上传后缀为 zip 格式的压缩包 </p>
                 </div>
             </div>
         </div>
@@ -260,7 +262,7 @@
                                 <div id="res-3" class="res"></div>
                             </div>
                             <a href="javascript:;" class="file">上传图片
-                                <input type="file" name="file" id="file0"><br>
+                                <input type="file" name="file" id="file3"><br>
                             </a>
                         </div>
                         <div class="m-calc">
@@ -271,14 +273,16 @@
                             </div>
                         </div>
                     </div>
+                    <p style="text-align: center;margin: 0;"> 仅支持上传后缀为 jpeg, jpg, png 格式的图片 </p>
                 </div>
                 <div class="panel panel-2" style="display: none;" >
                     <a href="javascript:;" class="file">上传压缩包
-                        <input type="file" name="file" id="mult-file">
+                        <input type="file" name="file" id="mult-file1">
                     </a>
                     <a href="javascript:;" class="file download" style="display: none;" >下载结果</a>
 
                     <p class="state"></p>
+                    <p style="text-align: center;margin: 0;"> 仅支持上传后缀为 zip 格式的压缩包 </p>
                 </div>
             </div>
         </div>
@@ -309,9 +313,17 @@
         for(var i in MODE){
             document.getElementsByClassName( MODE[ i ] )[0].style.display = 'none'
             if( i === opt.value ){
-                document.getElementsByClassName( MODE[ i ] )[0].style.display = 'block'
+                var ctnt = document.getElementsByClassName( MODE[ i ] )[0];
+                ctnt.style.display = 'block';
+
+                // 因为绑定tab切换事件导致 所有其他的panel都显示 none, 
+                // 所以要在select切换后使第一个display：block， 以及tab添加active
+                _utils.addClass(ctnt.getElementsByClassName('tabs')[0].children[0], 'active');
+
+                ctnt.getElementsByClassName('panels')[0].children[0].style.display = 'block';
             }
         }
+
 
     }
 
@@ -362,7 +374,57 @@
                 download.onclick = function(){
                     var url = location.origin + '/static' + arg.split('static')[1];
                     window.open(url)
+
                 }
+
+                
+            },
+            error:function(e){
+                state.innerHTML = '后台处理错误';
+                alert("后台处理错误");
+                console.log(e)
+            }
+        });
+    });
+    $("#mult-file1").change(function(){
+        fileobj = this.files[0];
+
+        var ext = ['zip'];
+        if( ext.indexOf( fileobj.name.split('.')[1] )  ){
+            alert(' 目前仅支持上传 .zip 后缀的压缩包文件 ')
+            return 
+        }
+
+        var form = new FormData();
+        form.append("file", fileobj);
+
+        var download = document.getElementsByClassName('download')[1];
+        download.style.display = 'none';
+        
+        var state = document.getElementsByClassName('state')[1];
+        state.innerHTML = '正在上传文件...';
+
+        $.ajax({
+            type: 'POST',
+            url: "predict_5",
+            data: form,
+            async: false,       //同步执行
+            processData: false, // 告诉jquery要传输data对象
+            contentType: false, //告诉jquery不需要增加请求头对于contentType的设置
+            success: function (arg) {
+
+                console.log(arg)
+                // // 状态
+                // state.innerHTML = '识别成功！';
+                // setTimeout(function(){ state.innerHTML = ''; }, 3000)
+
+                // // 显示下载按钮
+                // download.style.display = 'inline-block';
+
+                // download.onclick = function(){
+                //     var url = location.origin + '/static' + arg.split('static')[1];
+                //     window.open(url)
+                // }
 
                 
             },
@@ -379,7 +441,7 @@
         if (objUrl) {
             $("#img0").attr("src", objUrl);
         }
-        test(0, 1)
+        test(0, 1, handleClassifyRes)
     });
 
     // 图片选择后预览
@@ -389,31 +451,23 @@
         if (objUrl) {
             $("#img1").attr("src", objUrl);
         }
-        test(1, 2)
+        test(1, 2, handleClassifyRes)
     });
-    // 图片选择后预览
-    $("#file2").change(function(){
-        var objUrl = getObjectURL(this.files[0]) ;//获取文件信息
-        console.log("objUrl = "+objUrl);
+
+    //  目标检测: 上传图片
+    $("#file3").change(function(){  //
+        var objUrl = getObjectURL(this.files[0]) ; 
+        console.log(objUrl)
         if (objUrl) {
             $("#img2").attr("src", objUrl);
         }
-        test(2, 1)
-    });
-    // 图片选择后预览
-    $("#file3").change(function(){
-        var objUrl = getObjectURL(this.files[0]) ;//获取文件信息
-        console.log("objUrl = "+objUrl);
-        if (objUrl) {
-            $("#img3").attr("src", objUrl);
-        }
-        test(3, 2)
+        test(3, 4, handleDetectRes)
     });
 
 
     // 切换tab
     function handleSwitchTab(){
-        var tabs = document.getElementsByClassName('tabs')[0].children;
+        var tabs = document.getElementsByClassName('tab');
 
         for(var i=0, len=tabs.length; i<len; i++){
             // 去除active 设置active
@@ -438,9 +492,87 @@
         }
     }
 
+    // 处理封面封底分类结果
+    function handleClassifyRes(index, route_index){
+        var flower='';  // 
 
+        return function(arg){
+            arg = JSON.parse(arg);
+            arg = arg.replace(/\'/g, '"');
+            arg = JSON.parse(arg);
 
-    function test(index, route_index) {
+            var out = arg.result,
+                color = '',
+                msg='';
+
+            console.log(out, typeof(arg), arg)
+
+            var colorMap = {
+                '0': 'green',
+                '1': 'orange',
+                '2': 'red'
+            }
+            var map = {
+                'normal': '朝上',
+                'inverse': '朝下',
+                'back': '封底',
+                'front': '封面'
+            }
+
+            var afterResDom1 = document.getElementById('res-1')
+            var afterResDom2 = document.getElementById('res-2')
+
+            out.forEach(e=>{
+                if(e.score >= 0.95){
+                    color = colorMap[0]
+                }else if( .80 <= e.score &&  e.score <= .95 ){
+                    color = colorMap[1]
+                }else{
+                    color = colorMap[2]
+                }
+
+                if( e.dir ){
+                    msg = e.dir
+                    probability[index] = e.score
+                }else{
+                    msg = e.face
+                }
+                
+                flower+=`<div style="color:${color}">
+                    ${ map[msg] } <span style="color:#000"> 置信率：${e.score} </span>
+                </div>`
+
+                
+            });
+
+            var id = "res-"+route_index;
+
+            document.getElementById(id).innerHTML=flower;
+            console.log(probability)
+            if( probability[0] >= probability[1] ){
+                console.log(afterResDom2)
+                afterResDom1.children[0].style.textDecoration = 'none';
+                // afterResDom2.children[0].style.textDecoration = 'line-through';
+            }else{
+                // afterResDom1.children[0].style.textDecoration = 'line-through';
+                afterResDom2.children[0].style.textDecoration = 'none';
+            }
+        }
+    }
+
+    function handleDetectRes(index, route_index){
+        return function(arg){
+            console.log('handleDetectRes ', arg)
+            // if( !arg.code ){
+                // console.log('图片流：', arg.result )
+                // var imageUrl = (window.URL || window.webkitURL).createObjectURL(arg.result);
+                document.getElementById('img3').src = 'data:image/jpg;base64,'+arg
+                // document.getElementById('img3').src = 'data:;base64,'+arg.result
+            // }
+        }
+    }
+
+    function test(index, route_index, cb) {
         var fileobj, url;
         // if(index == 0){
         //     fileobj = $("#file"+(index-1))[0].files[0];
@@ -451,8 +583,7 @@
 
         var form = new FormData();
         form.append("file", fileobj);
-       
-        var flower='';  // 
+      
         $.ajax({
             type: 'POST',
             url: "predict_"+route_index,
@@ -460,69 +591,7 @@
             async: false,       //同步执行
             processData: false, // 告诉jquery要传输data对象
             contentType: false, //告诉jquery不需要增加请求头对于contentType的设置
-            success: function (arg) {
-                arg = JSON.parse(arg);
-                arg = arg.replace(/\'/g, '"');
-                arg = JSON.parse(arg);
-
-                var out = arg.result,
-                    color = '',
-                    msg='';
-
-                console.log(out, typeof(arg), arg)
-
-                var colorMap = {
-                    '0': 'green',
-                    '1': 'orange',
-                    '2': 'red'
-                }
-                var map = {
-                    'normal': '朝上',
-                    'inverse': '朝下',
-                    'back': '封底',
-                    'front': '封面'
-                }
-
-                var afterResDom1 = document.getElementById('res-1')
-                var afterResDom2 = document.getElementById('res-2')
-
-                out.forEach(e=>{
-                    if(e.score >= 0.95){
-                        color = colorMap[0]
-                    }else if( .80 <= e.score &&  e.score <= .95 ){
-                        color = colorMap[1]
-                    }else{
-                        color = colorMap[2]
-                    }
-
-                    if( e.dir ){
-                        msg = e.dir
-                        probability[index] = e.score
-                    }else{
-                        msg = e.face
-                    }
-                    
-                    flower+=`<div style="color:${color}">
-                        ${ map[msg] } <span style="color:#000"> 置信率：${e.score} </span>
-                    </div>`
-
-                    
-                });
-
-                var id = "res-"+route_index;
-
-                document.getElementById(id).innerHTML=flower;
-                console.log(probability)
-                if( probability[0] >= probability[1] ){
-                    console.log(afterResDom2)
-                    afterResDom1.children[0].style.textDecoration = 'none';
-                    // afterResDom2.children[0].style.textDecoration = 'line-through';
-                }else{
-                    // afterResDom1.children[0].style.textDecoration = 'line-through';
-                    afterResDom2.children[0].style.textDecoration = 'none';
-                }
-
-            },
+            success: cb(index, route_index),
             error:function(e){
                 alert("后台处理错误");
                 console.log(e)
