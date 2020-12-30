@@ -1,0 +1,5 @@
+bookrecog_server/samples/simsun.ttc filter=lfs diff=lfs merge=lfs -text
+bookrecog_server/static/img/logo@452x158.png filter=lfs diff=lfs merge=lfs -text
+bookrecog_server/static/img/no-img.png filter=lfs diff=lfs merge=lfs -text
+bookrecog_server/weights/mobilenet_v3_epoch_50.pth filter=lfs diff=lfs merge=lfs -text
+bookrecog_server/weights/yolov5_best.pt filter=lfs diff=lfs merge=lfs -text
