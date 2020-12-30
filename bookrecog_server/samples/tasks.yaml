@@ -1,0 +1,7 @@
+class_dic:
+  face:
+    front: [front, front_inverse]
+    back: [back, back_inverse]
+  dir:
+    normal: [front, back]
+    inverse: [front_inverse, back_inverse]
