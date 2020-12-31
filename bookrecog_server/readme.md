@@ -2,7 +2,7 @@
 
 |-bookrecog_server
 
-                |-run_server.py                         # 主程序，服务启动入口
+                |-run_server.py                         # 主程序，服务启动入口            
                 |-samples           |- ...              # mobilenet_v3 模型、工具
                                     |-simsun.ttc        # 中文宋体字库
                                     |-tasks.yaml        # 分类的"classes"
@@ -13,13 +13,22 @@
                                     |-assets            # 需要上传到web的zip文件存储地址
                 |-templates         |- ...              # Web 模板
                 |-tmp                                   # 临时（图像）文件存储
-
                 |-weights           |- ...              # 权重文件
-
+                |-deepcls           |- ...              
+                |-deepcv            |- ...              
+                |-mmvls             |- ...  
 
 # 启动服务
+
 python run_server.py
 
 # 安装依赖
+
 进入虚拟环境后，运行
 conda install --yes --file requirements.txt 
+
+# weights
+yolov5_best.pt: url: https://pan.baidu.com/s/12RpeU7FOQllzgkbnBc_Rrw 
+password:lnyo
+
+
