@@ -24,60 +24,60 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'JPG', 'PNG', 'bmp'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-# # 处理单张图像
-# @app.route("/predict_1", methods=["POST"])
-# @torch.no_grad()
-# def predict_1():
-#     f = request.files["file"]
-#     if not allowed_file(f.filename):
-#         return jsonify({"code": 1, "result": "请检查上传的图片类型，仅限于png、PNG、jpg、JPG、bmp"})
-#     img_bytes = f.read()
-#     print(type(img_bytes))
-#     txt_labels = get_predict_one(img_bytes)
+# 处理单张图像
+@app.route("/predict_1", methods=["POST"])
+@torch.no_grad()
+def predict_1():
+    f = request.files["file"]
+    if not allowed_file(f.filename):
+        return jsonify({"code": 1, "result": "请检查上传的图片类型，仅限于png、PNG、jpg、JPG、bmp"})
+    img_bytes = f.read()
+    print(type(img_bytes))
+    txt_labels = get_predict_one(img_bytes)
 
-#     return jsonify(txt_labels)
+    return jsonify(txt_labels)
 
-# # 处理单张图像
-# @app.route("/predict_2", methods=["POST"])
-# @torch.no_grad()
-# def predict_2():
-#     f = request.files["file"]
-#     if not allowed_file(f.filename):
-#         return jsonify({"code": 1, "result": "请检查上传的图片类型，仅限于png、PNG、jpg、JPG、bmp"})
-#     img_bytes = f.read()
-#     txt_labels = get_predict_one(img_bytes)
+# 处理单张图像
+@app.route("/predict_2", methods=["POST"])
+@torch.no_grad()
+def predict_2():
+    f = request.files["file"]
+    if not allowed_file(f.filename):
+        return jsonify({"code": 1, "result": "请检查上传的图片类型，仅限于png、PNG、jpg、JPG、bmp"})
+    img_bytes = f.read()
+    txt_labels = get_predict_one(img_bytes)
 
-#     return jsonify(txt_labels)
+    return jsonify(txt_labels)
 
-# # 处理批量图像
-# @app.route("/predict_3", methods=["POST"])
-# def predict_3():
-#     '''
-#     处理批量上传的文件
-#     file_path:  # 从Web获得的文件保存到的路径
-#     target_path: # 解压后的文件保存到的路径
-#     out_dir: # 处理后需传到Web的文件保存的路径
-#     '''
-#     BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
-#     os.makedirs(BASE_DIR, exist_ok=True)
+# 处理批量图像
+@app.route("/predict_3", methods=["POST"])
+def predict_3():
+    '''
+    处理批量上传的文件
+    file_path:  # 从Web获得的文件保存到的路径
+    target_path: # 解压后的文件保存到的路径
+    out_dir: # 处理后需传到Web的文件保存的路径
+    '''
+    BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmp")
+    os.makedirs(BASE_DIR, exist_ok=True)
 
-#     obj = request.files["file"]
-#     file_path = os.path.join(BASE_DIR,obj.filename) 
-#     obj.save(file_path)
+    obj = request.files["file"]
+    file_path = os.path.join(BASE_DIR,obj.filename) 
+    obj.save(file_path)
 
-#     target_path = os.path.join(BASE_DIR, os.path.splitext(obj.filename)[0])  
-#     os.makedirs(target_path, exist_ok=True)
-#     ret = unzip_file(file_path, target_path)
+    target_path = os.path.join(BASE_DIR, os.path.splitext(obj.filename)[0])  
+    os.makedirs(target_path, exist_ok=True)
+    ret = unzip_file(file_path, target_path)
     
 
-#     out_dir = get_predict(img_f = target_path, out_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),"static/assets",f"save_{os.path.splitext(obj.filename)[0]}"))
-#     zip_f = zip_file(out_dir)
+    out_dir = get_predict(img_f = target_path, out_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),"static/assets",f"save_{os.path.splitext(obj.filename)[0]}"))
+    zip_f = zip_file(out_dir)
 
-#     os.remove(file_path)  # 删除文件
-#     shutil.rmtree(target_path)
-#     shutil.rmtree(out_dir) 
-#     print(zip_f)
-#     return zip_f
+    os.remove(file_path)  # 删除文件
+    shutil.rmtree(target_path)
+    shutil.rmtree(out_dir) 
+    print(zip_f)
+    return zip_f
 
 
 '''
@@ -129,4 +129,4 @@ def root():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=5000)
