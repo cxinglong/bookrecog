@@ -2,6 +2,7 @@ import os
 import shutil
 import torch
 import json
+import cv2
 import base64
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS 
@@ -92,10 +93,17 @@ def predict_4():
     if not allowed_file(f.filename):
         return jsonify({"code": 1, "result": "请检查上传的图片类型，仅限于png、PNG、jpg、JPG、bmp"})
     img_bytes = f.read()
+    print('img_bytes:', type(img_bytes) )
     img = get_detect_one(img_bytes)
-    res = base64.b64encode(img)
+    
+    array_bytes = img.tobytes()
+    
+    success,encoded_image = cv2.imencode(".jpg",img)
 
-    return jsonify({"code": 1, "result" : res.decode()})
+    dst_bytes = encoded_image.tostring()
+    img_dst = base64.b64encode(dst_bytes)
+    return img_dst
+
 
 # 处理批量图像
 @app.route("/predict_5", methods=["POST"])

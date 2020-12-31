@@ -5,7 +5,7 @@ _libgcc_mutex=0.1=conda_forge
 _openmp_mutex=4.5=1_llvm
 abseil-cpp=20200225.2=he1b5a44_2
 absl-py=0.11.0=py38h578d9bd_0
-addict=2.4.0=pypi_0
+# addict=2.4.0=pypi_0
 aiohttp=3.7.3=py38h497a2fe_0
 albumentations=0.5.2=pyhd8ed1ab_0
 async-timeout=3.0.1=py_1000
@@ -115,8 +115,8 @@ markdown=3.3.3=pyh9f0ad1d_0
 markupsafe=1.1.1=py38h8df0ef7_2
 matplotlib-base=3.3.3=py38h5c7f4ab_0
 mkl=2020.4=h726a3e6_304
-mmcls=0.6.0=dev_0
-mmcv=1.1.5=pypi_0
+# mmcls=0.6.0=dev_0
+# mmcv=1.1.5=pypi_0
 multidict=5.1.0=py38h497a2fe_0
 mysql-common=8.0.22=ha770c72_1
 mysql-libs=8.0.22=h1fd7589_1
@@ -152,7 +152,7 @@ pysocks=1.7.1=py38h924ce5b_2
 python=3.8.6=hffdb5ce_1_cpython
 python-dateutil=2.8.1=py_0
 python_abi=3.8=1_cp38
-pytorch=1.6.0=py3.8_cuda10.2.89_cudnn7.6.5_0
+# pytorch=1.6.0=py3.8_cuda10.2.89_cudnn7.6.5_0
 pywavelets=1.1.1=py38h5c078b8_3
 pyyaml=5.3.1=py38h8df0ef7_1
 qt=5.12.9=h9d6b050_2
@@ -197,7 +197,7 @@ xorg-xextproto=7.3.0=h14c3975_1002
 xorg-xproto=7.0.31=h7f98852_1007
 xz=5.2.5=h516909a_1
 yaml=0.2.5=h516909a_0
-yapf=0.30.0=pypi_0
+# yapf=0.30.0=pypi_0
 yarl=1.6.3=py38h497a2fe_0
 zfp=0.5.5=h9c3ff4c_4
 zipp=3.4.0=py_0
